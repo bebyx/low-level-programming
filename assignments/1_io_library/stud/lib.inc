@@ -1,22 +1,47 @@
 section .text
 
+exit:
+    xor rdi, rdi
+    mov rax, 60
+    syscall
+
 string_length:
     xor rax, rax
+.loop:
+    cmp byte [rdi+rax], 0
+    je .end
+
+    inc rax
+    jmp .loop
+.end:
+    ; rax holds the number of chars in string
     ret
 
 print_string:
-    xor rax, rax
+    push rdi ; save source string pointer
+    call string_length
+    mov rdx, rax ; passing string length, returned in rax by string_length function
+
+    pop rdi ; return string pointer screwed by string_length function
+    mov rsi, rdi ; take string pointer as a source
+
+    mov rax, 1
+    mov rdi, 1
+    syscall
+
     ret
 
-
 print_char:
-    xor rax, rax
+    push rdi
+    mov rdi, rsp
+    call print_string
+    pop rdi
     ret
 
 print_newline:
-    xor rax, rax
+    mov rdi, 10
+    jmp print_char
     ret
-
 
 print_uint:
     xor rax, rax
@@ -34,7 +59,7 @@ string_equals:
 
 read_char:
     xor rax, rax
-    ret 
+    ret
 
 read_word:
     ret
@@ -49,8 +74,9 @@ parse_uint:
 ; returns rax: number, rdx : length
 parse_int:
     xor rax, rax
-    ret 
+    ret
 
 
 string_copy:
+    xor rax, rax
     ret
